@@ -29,7 +29,7 @@ void detruire_liste(liste_noeud_t** liste_ptr);
  * @param liste [in] liste à tester
  * @return vrai ssi la liste ne contient aucun élément
  */
-boolean est_vide_liste(const liste_noeud_t* liste);
+bool est_vide_liste(const liste_noeud_t* liste);
 
 /**
  * contient_noeud_liste : test si le noeud donné appartient à la liste donnée.
@@ -174,7 +174,7 @@ noeud_id_t min_noeud_liste(const liste_noeud_t* liste);
  * @param precedent noeud précédent du noeud à insérer (prec(n))
  * @param distance distance du noeud à insérer (dist(n))
  */
-    void inserer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud_inser, noeud_id_t noeud_prec, float distance);
+void inserer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud_inser, noeud_id_t noeud_prec, float distance);
 
 /**
  * changer_noeud_liste : modifie les valeurs associées au noeud donné dans la liste donnée.
@@ -204,5 +204,4 @@ void changer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud_modif, noeud_id_
  * @param noeud noeud à supprimer de liste
  */
 void supprimer_noeud_liste(liste_noeud_t* liste,  noeud_id_t noeud_suppr);
-
 
