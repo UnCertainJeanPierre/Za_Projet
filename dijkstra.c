@@ -69,9 +69,9 @@ float dijkstra(const struct graphe_t *graphe, noeud_id_t source,
         if (dist1 < dist2) { // D-2.4.3
 
           if (!contient_noeud_liste(visited, neighbours[i])) {
-            inserer_noeud_liste(visited, neighbours[i], current_node, disttot);
+            inserer_noeud_liste(visited, neighbours[i], current_node, dist1);
           } else {
-            changer_noeud_liste(visited, neighbours[i], current_node, disttot);
+            changer_noeud_liste(visited, neighbours[i], current_node, dist1);
           }
         }
       }
