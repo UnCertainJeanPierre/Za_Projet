@@ -12,34 +12,48 @@ struct cellule{
 
 struct liste_noeud_t{
     struct cellule* debut;
+    struct cellule* fin;
+    int taille;
 };
 
+//done
 liste_noeud_t* creer_liste(){
     liste_noeud_t* nouv_liste = (liste_noeud_t*)malloc(sizeof(liste_noeud_t));
-     if (nouv_liste != NULL){ // On test si le mallock a bien fonctionné
-        nouv_liste->debut = NULL;
-        return nouv_liste;
+    if (nouv_liste == NULL){ // On test si le mallock a bien fonctionné
+        return NULL; // On renvois null quand il y a eu une erreur et que la liste ne c'est pas bien crée.
     }
-    return NULL; // On renvois null quand il y a eu une erreur et que la liste ne c'est pas bien crée.
+    nouv_liste->debut = NULL;
+    nouv_liste->fin = NULL;
+    nouv_liste->taille = 0;
+    return nouv_liste;
 }
 
-void detruire_liste(liste_noeud_t** liste_ptr) {
-    if (*liste_ptr != NULL) {
-    	struct cellule* cellule_courante = &(*liste_ptr)->debut;
-    	while (cellule_courante != NULL) {
-    	    struct cellule* cellule_suivante = cellule_courante->suivant;
-    	    free(cellule_courante);
-    	    cellule_courante = cellule_suivante;
-    	}
-    *liste_ptr = NULL;
-    }
+//done
+void detruire_liste(liste_noeud_t** liste) {
+    struct cellule* courante, *suivante;
+    courante = (*liste)->debut;
+    while (courante != NULL){//On commence par vider la liste
+    	suivante = courante->suivant;
+    	free(courante);
+    	courante = suivante;
+    }//Puis on free la liste globale 
+    (*liste)->debut = NULL;
+    (*liste)->fin = NULL;
+    (*liste)->taille = 0;
+    free(*liste);
+    *liste = NULL;
 }
 
+//done
 bool est_vide_liste(const liste_noeud_t* liste){
-    return liste->debut == NULL;
+    return liste->taille == 0;
 }
 
+//done
 bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
+    if (est_vide_liste(liste)){
+    	return false;
+    }
     struct cellule* courante = liste->debut;
     while(courante != NULL){
         if(courante->noeud == noeud){
@@ -50,6 +64,7 @@ bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
     return false;
 }
 
+//done
 bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source, noeud_id_t destination){
     struct cellule* courante = liste->debut;
     while(courante != NULL){
@@ -61,6 +76,7 @@ bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source, noeud_
     return false;
 }
 
+//done
 float distance_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
     struct cellule* courante = liste->debut;
     while(courante != NULL){
@@ -72,6 +88,7 @@ float distance_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
     return INFINITY;
 }
 
+//done
 noeud_id_t precedent_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
     struct cellule* courante = liste->debut;
     while(courante != NULL){
@@ -83,6 +100,7 @@ noeud_id_t precedent_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud){
     return NO_ID;
 }
 
+//done
 noeud_id_t min_noeud_liste(const liste_noeud_t* liste){
     struct cellule* courante = liste->debut;
     noeud_id_t min = NO_ID;
@@ -97,19 +115,25 @@ noeud_id_t min_noeud_liste(const liste_noeud_t* liste){
     return min;
 }
 
+//done
 void inserer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud, noeud_id_t precedent, float distance){
-    struct cellule* courante = liste->debut;
-    while(courante->suivant != NULL){
-        courante = courante->suivant;
+    struct cellule* ajout = (struct cellule*)malloc(sizeof(struct cellule));
+    ajout->noeud = noeud;
+    ajout->precede = precedent;
+    ajout->dist = distance;
+    ajout->suivant = NULL;    
+    if (liste->debut == NULL) {
+    	liste->debut = ajout;
+    	liste->fin = ajout;
     }
-    courante->suivant = (liste_noeud_t*)malloc(sizeof(liste_noeud_t));
-    courante = courante->suivant;
-    courante->noeud = noeud;
-    courante->precede = precedent;
-    courante->dist = distance;
-    courante->suivant = NULL;
+    else{
+    	liste->fin->suivant = ajout;
+    	liste->fin = ajout;
+    }
+    liste->taille++;
 }
 
+//done
 void changer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud, noeud_id_t precedent, float distance){
     struct cellule* courante = liste->debut;
     while(courante != NULL){
@@ -123,15 +147,31 @@ void changer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud, noeud_id_t prec
     inserer_noeud_liste(liste, noeud, precedent, distance);
 }
 
+
+//done
 void supprimer_noeud_liste(liste_noeud_t* liste, noeud_id_t noeud){
-    struct cellule* courante = liste->debut;
-    while(courante->suivant != NULL){
-        if(courante->suivant->noeud == noeud){
-            struct cellule* suivante = courante->suivant->suivant;
-            free(courante->suivant);
-            courante->suivant = suivante;
-            return;
-        }
+    struct cellule *courante, *suppr;
+    courante = liste->debut;
+    if (est_vide_liste(liste)){
+    	return;
+    }
+    if (courante->noeud == noeud){
+    	liste->debut = courante->suivant;
+    	free(courante);
+    	liste->taille--;
+    	return;
+    }
+    while((courante->suivant != NULL) && (courante->suivant->noeud != noeud)){
         courante = courante->suivant;
+    }
+    if(courante->suivant != NULL){
+        suppr = courante->suivant;
+        courante->suivant = courante->suivant->suivant;
+        free(suppr);
+        if (courante->suivant == NULL){ // si on a supprimé le dernière élément il faut mettre a jour liste->fin
+       	    liste->fin = courante;
+       	}
+        liste->taille--;
+        return;
     }
 }
